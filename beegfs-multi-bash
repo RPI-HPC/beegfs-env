@@ -1,0 +1,26 @@
+function beegfs-ctl() {
+	cfg=/etc/beegfs/$1.d/beegfs-client.conf
+	shift
+	/usr/bin/beegfs-ctl --cfgFile=$cfg $@
+}
+
+function beegfs-check-servers() {
+	cfg=/etc/beegfs/$1.d/beegfs-client.conf
+	shift
+	/usr/bin/beegfs-check-servers -c $cfg $@
+}
+
+function beegfs-df() {
+	path=/mnt/beegfs.$1
+	shift
+	/usr/bin/beegfs-df -p $path $@
+}
+
+function beegfs-fsck() {
+	cfg=/etc/beegfs/$1.d/beegfs-client.conf
+	outFile=/var/log/beegfs-fsck-$1.out
+	logFile=/var/log/beegfs-fsck-$1.log
+	dbPath=/var/lib/beegfs/fsckdb/$1
+	shift
+	/usr/bin/beegfs-fsck --cfgFile=$cfg --logOutFile=$outFile --logStdFile=$logFile --databasePath=$dbPath $@
+}
