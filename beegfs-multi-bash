@@ -1,26 +1,51 @@
+function _get_cluster() {
+	if [ x$BEEGFS_CLUSTER != x ]; then
+		echo $BEEGFS_CLUSTER
+		return 2
+	elif [ x$1 != x ]; then
+		echo $1
+		return 1
+	else
+		echo "Error: No cluster selected!" >&2
+		return 0
+	fi
+}
+
 function beegfs-ctl() {
-	cfg=/etc/beegfs/$1.d/beegfs-client.conf
-	shift
+	cluster=`_get_cluster $1` && return 1
+	if [ $? -eq 1 ]; then
+		shift
+	fi
+	cfg=/etc/beegfs/${cluster}.d/beegfs-client.conf
 	/usr/bin/beegfs-ctl --cfgFile=$cfg $@
 }
 
 function beegfs-check-servers() {
-	cfg=/etc/beegfs/$1.d/beegfs-client.conf
-	shift
+	cluster=`_get_cluster $1` && return 1
+	if [ $? -eq 1 ]; then
+		shift
+	fi
+	cfg=/etc/beegfs/${cluster}.d/beegfs-client.conf
 	/usr/bin/beegfs-check-servers -c $cfg $@
 }
 
 function beegfs-df() {
-	path=/mnt/beegfs.$1
-	shift
+	cluster=`_get_cluster $1` && return 1
+	if [ $? -eq 1 ]; then
+		shift
+	fi
+	path=/mnt/beegfs.${cluster}
 	/usr/bin/beegfs-df -p $path $@
 }
 
 function beegfs-fsck() {
-	cfg=/etc/beegfs/$1.d/beegfs-client.conf
-	outFile=/var/log/beegfs-fsck-$1.out
-	logFile=/var/log/beegfs-fsck-$1.log
-	dbPath=/var/lib/beegfs/fsckdb/$1
-	shift
+	cluster=`_get_cluster $1` && return 1
+	if [ $? -eq 1 ]; then
+		shift
+	fi
+	cfg=/etc/beegfs/${cluster}.d/beegfs-client.conf
+	outFile=/var/log/beegfs-fsck-${cluster}.out
+	logFile=/var/log/beegfs-fsck-${cluster}.log
+	dbPath=/var/lib/beegfs/fsckdb/${cluster}
 	/usr/bin/beegfs-fsck --cfgFile=$cfg --logOutFile=$outFile --logStdFile=$logFile --databasePath=$dbPath $@
 }
