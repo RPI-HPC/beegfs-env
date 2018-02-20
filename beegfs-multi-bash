@@ -1,14 +1,25 @@
 function _get_cluster() {
+	local cluster
+	local ret
+
 	if [ x$BEEGFS_CLUSTER != x ]; then
-		echo $BEEGFS_CLUSTER
-		return 2
+		cluster=$BEEGFS_CLUSTER
+		ret=2
 	elif [ x$1 != x ]; then
-		echo $1
-		return 1
+		cluster=$1
+		ret=1
 	else
 		echo "Error: No cluster selected!" >&2
 		return 0
 	fi
+
+	if [ ${cluster:0:1} == "-" ]; then
+		echo "Error: \"$cluster\" does not seem like a cluster!" >&2
+		return 0
+	fi
+
+	echo $cluster
+	return $ret
 }
 
 function beegfs-ctl() {
